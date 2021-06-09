@@ -21,22 +21,23 @@ func findFood(moves []string, b Battlesnake, foods []Coord ) string {
 	return move
 }
 
-func lowRiskMove(moves []string, b Battlesnake, foods []Coord, h int, w int) string {
-	if b.Health < 15 {
-		return findFood(moves, b, foods)
+func lowRiskMove(moves []string, me Battlesnake, board Board) string {
+	if me.Health < 15 {
+		return findFood(moves, me, board.Food)
 	}
 
 	density := 1000
 	move := ""
 	for _, m := range moves {
-		newHead := movedHead(b.Head, m)
-		newBody := append([]Coord{newHead}, b.Body...)
+		newHead := movedHead(me.Head, m)
+		newBody := append([]Coord{newHead}, me.Body...)
 		nDensity := 0
 		for _, b := range newBody {
 			if adjacent(newHead, b) {
 				nDensity += 1
 			}
-			nDensity += adjacentToWall(newHead, m, h, w)
+			nDensity += adjacentToWall(newHead, m, board.Height, board.Width)
+			nDensity += opponentProximity(me.ID, newHead, board.Snakes)
 		}
 		if nDensity < density {
 			density = nDensity
@@ -49,6 +50,23 @@ func lowRiskMove(moves []string, b Battlesnake, foods []Coord, h int, w int) str
 		}
 	}
 	return move
+}
+
+func opponentProximity(myID string, head Coord, snakes []Battlesnake) int {
+	density := 0
+	for _, s := range snakes {
+		if s.ID == myID {
+			continue
+		}
+
+		for _, b := range s.Body {
+			if adjacent(head, b) {
+				density += 1
+			}
+		}
+	}
+
+	return density
 }
 
 func lineDistance(a, b Coord) float64 {

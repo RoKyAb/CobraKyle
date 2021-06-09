@@ -100,7 +100,7 @@ func HandleMove(w http.ResponseWriter, r *http.Request) {
 
 	possibleMoves := dontHitWallOrSelf(request.You, request.Board.Height, request.Board.Width)
 	//move := possibleMoves[rand.Intn(len(possibleMoves))]
-	move := lowRiskMove(possibleMoves, request.You, request.Board.Food, request.Board.Height, request.Board.Width)
+	move := lowRiskMove(possibleMoves, request.You, request.Board)
 
 	response := MoveResponse{
 		Move: move,
