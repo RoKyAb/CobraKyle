@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 )
@@ -62,10 +61,10 @@ type MoveResponse struct {
 func HandleIndex(w http.ResponseWriter, r *http.Request) {
 	response := BattlesnakeInfoResponse{
 		APIVersion: "1",
-		Author:     "",        // TODO: Your Battlesnake username
-		Color:      "#888888", // TODO: Personalize
-		Head:       "default", // TODO: Personalize
-		Tail:       "default", // TODO: Personalize
+		Author:     "kabra",
+		Color:      "#fc03f8",
+		Head:       "silly",
+		Tail:       "hook",
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -99,15 +98,15 @@ func HandleMove(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	// Choose a random direction to move in
-	possibleMoves := []string{"up", "down", "left", "right"}
-	move := possibleMoves[rand.Intn(len(possibleMoves))]
+	possibleMoves := dontHitWallOrSelf(request.You, request.Board.Height, request.Board.Width)
+	//move := possibleMoves[rand.Intn(len(possibleMoves))]
+	move := lowRiskMove(possibleMoves, request.You, request.Board.Food, request.Board.Height, request.Board.Width)
 
 	response := MoveResponse{
 		Move: move,
 	}
 
-	fmt.Printf("MOVE: %s\n", response.Move)
+	//fmt.Printf("MOVE: %s\n", response.Move)
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
