@@ -98,7 +98,7 @@ func HandleMove(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	possibleMoves := dontHitWallOrSelf(request.You, request.Board.Height, request.Board.Width)
+	possibleMoves := dontHitWallOrSelfOrOpponents(request.You, request.Board)
 	//move := possibleMoves[rand.Intn(len(possibleMoves))]
 	move := lowRiskMove(possibleMoves, request.You, request.Board)
 

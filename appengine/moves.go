@@ -94,29 +94,37 @@ func adjacentToWall(head Coord, move string, h int, w int) int {
 	return 0
 }
 
-func dontHitWallOrSelf(b Battlesnake, h int, w int) []string {
+func dontHitWallOrSelfOrOpponents(b Battlesnake, board Board) []string {
 	possibleMoves := []string{}
 	allMoves := []string{"up", "down", "left", "right"}
+
+	// Try avoid everything
 	for _, m := range allMoves {
 		newHead := movedHead(b.Head, m)
-		if missWalls(newHead, h, w) && missSelf(newHead, b.Body) && dontEnclose(newHead, b.Body, w, h) {
+		if missWalls(newHead, board.Height, board.Width) && missSelf(newHead, b.Body) && missOpponents(b.ID, newHead, board.Snakes) && dontEnclose(newHead, b.Body, board.Height, board.Width) {
 			//fmt.Print(newHead)
 			//fmt.Println(" "+m)
 			possibleMoves = append(possibleMoves, m)
 		}
 	}
 
-	//fmt.Print("Body: ")
-	//fmt.Println(b.Body)
-
-	//fmt.Print("Possible Moves: ")
-	//fmt.Println(possibleMoves)
+	// At least try not to enclose yourself
+	if len(possibleMoves) == 0 {
+		for _, m := range allMoves {
+		newHead := movedHead(b.Head, m)
+			if missWalls(newHead, board.Height, board.Width) && missSelf(newHead, b.Body) && dontEnclose(newHead, b.Body, board.Height, board.Width) {
+				//fmt.Print(newHead)
+				//fmt.Println(" "+m)
+				possibleMoves = append(possibleMoves, m)
+			}
+		}
+	}
 
 	// At least try not to hit wall or self
 	if len(possibleMoves) == 0 {
 		for _, m := range allMoves {
 			newHead := movedHead(b.Head, m)
-			if missWalls(newHead, h, w) && missSelf(newHead, b.Body) {
+			if missWalls(newHead, board.Height, board.Width) && missSelf(newHead, b.Body) {
 				possibleMoves = append(possibleMoves, m)
 			}
 		}
@@ -137,6 +145,20 @@ func missSelf(newHead Coord, body []Coord) bool {
 	for _, b := range body {
 		if b == newHead {
 			return false
+		}
+	}
+	return true
+}
+
+func missOpponents(myID string, newHead Coord, snakes []Battlesnake) bool {
+	for _, s := range snakes {
+		if s.ID == myID {
+			continue
+		}
+		for _, b := range s.Body {
+			if b == newHead {
+				return false
+			}
 		}
 	}
 	return true
