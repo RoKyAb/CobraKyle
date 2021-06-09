@@ -59,6 +59,10 @@ func opponentProximity(myID string, head Coord, snakes []Battlesnake) int {
 			continue
 		}
 
+		if adjacent(head, s.Head) {
+			density += 2
+		}
+
 		for _, b := range s.Body {
 			if adjacent(head, b) {
 				density += 1
