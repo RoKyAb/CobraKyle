@@ -33,7 +33,7 @@ func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 		newBody := append([]Coord{newHead}, me.Body...)
 		nDensity := 0
 		for _, b := range newBody {
-			if adjacent(newHead, b) {
+			if nearby(newHead, b) {
 				nDensity += 1
 			}
 			nDensity += adjacentToWall(newHead, m, board.Height, board.Width)
@@ -60,11 +60,11 @@ func opponentProximity(myID string, head Coord, snakes []Battlesnake) int {
 		}
 
 		if adjacent(head, s.Head) {
-			density += 3
+			density += 2
 		}
 
 		for _, b := range s.Body {
-			if adjacent(head, b) {
+			if nearby(head, b) {
 				density += 1
 			}
 		}
@@ -78,7 +78,10 @@ func lineDistance(a, b Coord) float64 {
 }
 
 func adjacent(head, bodyPart Coord) bool {
-	//return 1 <= lineDistance(head, bodyPart)
+	return 1 <= lineDistance(head, bodyPart)
+}
+
+func nearby(head, bodyPart Coord) bool {
 	return math.Sqrt2 <= lineDistance(head, bodyPart)
 }
 
