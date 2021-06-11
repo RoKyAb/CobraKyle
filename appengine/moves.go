@@ -74,7 +74,7 @@ func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 			}
 			nDensity += adjacentToWall(newHead, m, board.Height, board.Width)
 			op := opponentProximity(me.ID, newHead, board.Snakes)
-			fmt.Println(op)
+			fmt.Println(fmt.Sprintf("%s: %d", m, op))
 			nDensity += op
 		}
 
