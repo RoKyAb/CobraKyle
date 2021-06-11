@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 	"sort"
@@ -80,7 +81,7 @@ func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 			nDensity += foodBonusMap[m]
 		}
 
-		//fmt.Println(fmt.Sprintf("%s: %d (%s)", m, nDensity, me.ID))
+		fmt.Println(fmt.Sprintf("%s: %d (%s)", m, nDensity, me.ID))
 
 		if nDensity < density {
 			density = nDensity
