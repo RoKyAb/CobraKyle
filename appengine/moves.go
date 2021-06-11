@@ -100,6 +100,7 @@ func opponentProximity(myID string, head Coord, snakes []Battlesnake) int {
 	density := 0
 	for _, s := range snakes {
 		if s.ID == myID {
+			fmt.Println("Skip me")
 			continue
 		}
 
