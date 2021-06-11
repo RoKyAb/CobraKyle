@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 	"sort"
@@ -72,7 +73,9 @@ func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 				nDensity += 1
 			}
 			nDensity += adjacentToWall(newHead, m, board.Height, board.Width)
-			nDensity += opponentProximity(me.ID, newHead, board.Snakes)
+			op := opponentProximity(me.ID, newHead, board.Snakes)
+			fmt.Println(op)
+			nDensity += op
 		}
 
 		if me.Health < 33 {
