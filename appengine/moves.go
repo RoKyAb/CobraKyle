@@ -3,9 +3,10 @@ package main
 import (
 	"math"
 	"math/rand"
+	"sort"
 )
 
-func findFood(moves []string, b Battlesnake, foods []Coord ) string {
+func findNearestFood(moves []string, b Battlesnake, foods []Coord ) string {
 	closestFood := 1000.0
 	move := ""
 	for _, m := range moves {
@@ -21,10 +22,44 @@ func findFood(moves []string, b Battlesnake, foods []Coord ) string {
 	return move
 }
 
-func lowRiskMove(moves []string, me Battlesnake, board Board) string {
-	if me.Health < 15 {
-		return findFood(moves, me, board.Food)
+func foodBonuses (moves []string, b Battlesnake, foods []Coord) map[string]int {
+	type foodDistancePair struct {
+		Move     string
+		Distance float64
 	}
+
+	foodDistance := make([]foodDistancePair, len(moves))
+	for i, m := range moves {
+		newHead := movedHead(b.Head, m)
+		closestFoodThisWay := 1000.0
+		for _, f := range foods {
+			d := lineDistance(f, newHead)
+			if d < closestFoodThisWay {
+				closestFoodThisWay = d
+			}
+		}
+		foodDistance[i] = foodDistancePair{Move: m, Distance: closestFoodThisWay}
+	}
+
+	sort.Slice(foodDistance, func(i, j int) bool {
+		return foodDistance[i].Distance < foodDistance[j].Distance
+	})
+
+	result := make(map[string]int)
+
+	closestFood := foodDistance[0].Distance
+	for i, fd := range foodDistance {
+		if fd.Distance == closestFood {
+			result[fd.Move] = -5
+		}
+		result[fd.Move] = -4 + i
+	}
+
+	return result
+}
+
+func lowRiskMove(moves []string, me Battlesnake, board Board) string {
+	foodBonusMap := foodBonuses(moves, me, board.Food)
 
 	density := 1000
 	move := ""
@@ -39,6 +74,11 @@ func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 			nDensity += adjacentToWall(newHead, m, board.Height, board.Width)
 			nDensity += opponentProximity(me.ID, newHead, board.Snakes)
 		}
+
+		if me.Health < 33 {
+			nDensity += foodBonusMap[m]
+		}
+
 		if nDensity < density {
 			density = nDensity
 			move = m
@@ -60,7 +100,7 @@ func opponentProximity(myID string, head Coord, snakes []Battlesnake) int {
 		}
 
 		if adjacent(head, s.Head) {
-			density += 5
+			density += 2
 		}
 
 		for _, b := range s.Body {
