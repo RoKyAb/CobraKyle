@@ -62,35 +62,35 @@ func foodBonuses (moves []string, b Battlesnake, foods []Coord) map[string]int {
 func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 	foodBonusMap := foodBonuses(moves, me, board.Food)
 
-	density := 1000
+	points := 1000
 	move := ""
 	for _, m := range moves {
 		newHead := movedHead(me.Head, m)
 		newBody := append([]Coord{newHead}, me.Body...)
-		nDensity := 0
+		nPoints := 0
 		for _, b := range newBody {
-			if nearby(newHead, b) {
-				nDensity += 1
+			if !nearby(newHead, b) {
+				nPoints += 1
 			}
 		}
 
-		nDensity += adjacentToWall(newHead, m, board.Height, board.Width)
-		nDensity += opponentProximity(me.ID, newHead, board.Snakes)
+		nPoints += adjacentToWall(newHead, m, board.Height, board.Width)
+		nPoints += opponentProximity(me.ID, newHead, board.Snakes)
 
 		if me.Health < 33 {
-			nDensity += foodBonusMap[m]
+			nPoints += foodBonusMap[m]
 		}
 
-		//fmt.Println(fmt.Sprintf("%s: %d [s:%d w:%d o:%d] (%s)", m, nDensity, self, wallD, op, me.ID))
-		fmt.Println(fmt.Sprintf("%s: %d (%s)", m, nDensity, me.ID))
+		//fmt.Println(fmt.Sprintf("%s: %d [s:%d w:%d o:%d] (%s)", m, nPoints, self, wallD, op, me.ID))
+		fmt.Println(fmt.Sprintf("%s: %d (%s)", m, nPoints, me.ID))
 
-		if nDensity < density {
-			density = nDensity
+		if nPoints < points {
+			points = nPoints
 			move = m
 		}
 
-		if nDensity == density && rand.Float64() > 0.5 {
-			density = nDensity
+		if nPoints == points && rand.Float64() > 0.5 {
+			points = nPoints
 			move = m
 		}
 	}
@@ -98,23 +98,23 @@ func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 }
 
 func opponentProximity(myID string, head Coord, snakes []Battlesnake) int {
-	density := 0
+	points := 0
 	for _, s := range snakes {
 		if s.ID != myID {
 			if adjacent(head, s.Head) {
-				density += 5
+				points += 5
 			}
 
 			for _, b := range s.Body {
 				if nearby(head, b) {
-					density += 1
+					points += 1
 				}
 			}
 		}
-		fmt.Println(fmt.Sprintf("Op score %s: %d", s.ID, density))
+		fmt.Println(fmt.Sprintf("Op score %s: %d", s.ID, points))
 	}
 
-	return density
+	return points
 }
 
 func lineDistance(a, b Coord) float64 {
@@ -122,11 +122,11 @@ func lineDistance(a, b Coord) float64 {
 }
 
 func adjacent(head, bodyPart Coord) bool {
-	return 1 <= lineDistance(head, bodyPart)
+	return 1 == lineDistance(head, bodyPart)
 }
 
 func nearby(head, bodyPart Coord) bool {
-	return math.Sqrt2 <= lineDistance(head, bodyPart)
+	return math.Sqrt2 >= lineDistance(head, bodyPart)
 }
 
 func adjacentToWall(head Coord, move string, h int, w int) int {
