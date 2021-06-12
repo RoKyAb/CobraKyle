@@ -6,22 +6,6 @@ import (
 	"sort"
 )
 
-func findNearestFood(moves []string, b Battlesnake, foods []Coord ) string {
-	closestFood := 1000.0
-	move := ""
-	for _, m := range moves {
-		newHead := movedHead(b.Head, m)
-		for _, f := range foods {
-			d := lineDistance(f, newHead)
-			if d < closestFood {
-				move = m
-				closestFood = d
-			}
-		}
-	}
-	return move
-}
-
 func foodBonuses (moves []string, b Battlesnake, foods []Coord) map[string]int {
 	type foodDistancePair struct {
 		Move     string
@@ -50,9 +34,9 @@ func foodBonuses (moves []string, b Battlesnake, foods []Coord) map[string]int {
 	closestFood := foodDistance[0].Distance
 	for i, fd := range foodDistance {
 		if fd.Distance == closestFood {
-			result[fd.Move] = -5
+			result[fd.Move] = -6
 		}
-		result[fd.Move] = -4 + i
+		result[fd.Move] = -5 + i
 	}
 
 	return result
@@ -77,6 +61,10 @@ func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 		nPoints += opponentProximity(me.ID, newHead, board.Snakes)
 
 		if me.Health < 33 {
+			nPoints += foodBonusMap[m]
+		}
+
+		if me.Health < 15 {
 			nPoints += foodBonusMap[m]
 		}
 
