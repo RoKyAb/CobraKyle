@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"sort"
@@ -82,7 +81,7 @@ func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 		}
 
 		//fmt.Println(fmt.Sprintf("%s: %d [s:%d w:%d o:%d] (%s)", m, nPoints, self, wallD, op, me.ID))
-		fmt.Println(fmt.Sprintf("%s: %d (%s)", m, nPoints, me.ID))
+		//fmt.Println(fmt.Sprintf("%s: %d (%s)", m, nPoints, me.ID))
 
 		if nPoints < points {
 			points = nPoints
@@ -101,7 +100,7 @@ func opponentProximity(myID string, head Coord, snakes []Battlesnake) int {
 	points := 0
 	for _, s := range snakes {
 		if s.ID != myID {
-			if adjacent(head, s.Head) {
+			if nearby(head, s.Head) {
 				points += 5
 			}
 
@@ -111,7 +110,6 @@ func opponentProximity(myID string, head Coord, snakes []Battlesnake) int {
 				}
 			}
 		}
-		fmt.Println(fmt.Sprintf("Op score %s: %d", s.ID, points))
 	}
 
 	return points
@@ -153,8 +151,6 @@ func dontHitWallOrSelfOrOpponents(b Battlesnake, board Board) []string {
 	for _, m := range allMoves {
 		newHead := movedHead(b.Head, m)
 		if missWalls(newHead, board.Height, board.Width) && missSelf(newHead, b.Body) && missOpponents(b.ID, newHead, board.Snakes) && dontEnclose(newHead, b, board) {
-			//fmt.Print(newHead)
-			//fmt.Println(" "+m)
 			possibleMoves = append(possibleMoves, m)
 		}
 	}
@@ -164,8 +160,6 @@ func dontHitWallOrSelfOrOpponents(b Battlesnake, board Board) []string {
 		for _, m := range allMoves {
 		newHead := movedHead(b.Head, m)
 			if missWalls(newHead, board.Height, board.Width) && missSelf(newHead, b.Body) && missOpponents(b.ID, newHead, board.Snakes) {
-				//fmt.Print(newHead)
-				//fmt.Println(" "+m)
 				possibleMoves = append(possibleMoves, m)
 			}
 		}
@@ -222,8 +216,6 @@ func dontEnclose(newHead Coord, b Battlesnake, board Board) bool {
 	for _, m := range allMoves {
 		futureHead := movedHead(newHead, m)
 		if missWalls(futureHead, board.Height, board.Width) && missSelf(futureHead, newBody) && missOpponents(b.ID, futureHead, board.Snakes) {
-			//fmt.Print(newHead)
-			//fmt.Println(" "+m)
 			possibleMoves = append(possibleMoves, m)
 		}
 	}
@@ -240,8 +232,6 @@ func dontEnclose(newHead Coord, b Battlesnake, board Board) bool {
 		for _, m := range allMoves {
 			futureFutreHead := movedHead(futureHead, m)
 			if missWalls(futureFutreHead, board.Height, board.Width) && missSelf(futureFutreHead, newNewBody) && missOpponents(b.ID, futureFutreHead, board.Snakes) {
-				//fmt.Print(newHead)
-				//fmt.Println(" "+m)
 				pm = append(pm, m)
 			}
 		}
