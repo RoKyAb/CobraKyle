@@ -60,11 +60,11 @@ func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 		nPoints += adjacentToWall(newHead, m, board.Height, board.Width)
 		nPoints += opponentProximity(me.ID, newHead, board.Snakes)
 
-		if me.Health < 20 {
+		if me.Health < int32(len(board.Snakes)*20) {
 			nPoints += foodBonusMap[m]
 		}
 
-		if me.Health < 10 {
+		if me.Health < int32(len(board.Snakes)*10) {
 			nPoints += foodBonusMap[m]
 		}
 
