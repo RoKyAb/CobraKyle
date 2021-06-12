@@ -74,14 +74,19 @@ func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 			}
 		}
 
-		nDensity += adjacentToWall(newHead, m, board.Height, board.Width)
-		nDensity += opponentProximity(me.ID, newHead, board.Snakes)
+		self := nDensity
+
+		wallD := adjacentToWall(newHead, m, board.Height, board.Width)
+		nDensity += wallD
+
+		op := opponentProximity(me.ID, newHead, board.Snakes)
+		nDensity += op
 
 		if me.Health < 33 {
 			nDensity += foodBonusMap[m]
 		}
 
-		fmt.Println(fmt.Sprintf("%s: %d (%s)", m, nDensity, me.ID))
+		fmt.Println(fmt.Sprintf("%s: %d [s:%d w:%d o:%d] (%s)", m, nDensity, self, wallD, op, me.ID))
 
 		if nDensity < density {
 			density = nDensity
@@ -100,7 +105,6 @@ func opponentProximity(myID string, head Coord, snakes []Battlesnake) int {
 	density := 0
 	for _, s := range snakes {
 		if s.ID == myID {
-			fmt.Println("Skip me")
 			continue
 		}
 
