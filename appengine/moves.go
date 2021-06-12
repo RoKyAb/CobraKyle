@@ -104,17 +104,15 @@ func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 func opponentProximity(myID string, head Coord, snakes []Battlesnake) int {
 	density := 0
 	for _, s := range snakes {
-		if s.ID == myID {
-			continue
-		}
+		if s.ID != myID {
+			if adjacent(head, s.Head) {
+				density += 5
+			}
 
-		if adjacent(head, s.Head) {
-			density += 5
-		}
-
-		for _, b := range s.Body {
-			if nearby(head, b) {
-				density += 1
+			for _, b := range s.Body {
+				if nearby(head, b) {
+					density += 1
+				}
 			}
 		}
 	}
