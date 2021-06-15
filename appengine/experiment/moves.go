@@ -1,4 +1,4 @@
-package main
+package experiment
 
 import (
 	"math"
@@ -58,7 +58,7 @@ func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 		}
 
 		nPoints += adjacentToWall(newHead, m, board.Height, board.Width)
-		nPoints += opponentProximity(me.ID, newHead, board.Snakes)
+		nPoints += opponentProximity(me.ID, newHead, me.Length, board.Snakes)
 
 		if me.Health < int32(len(board.Snakes)*20) {
 			nPoints += foodBonusMap[m]
@@ -84,11 +84,11 @@ func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 	return move
 }
 
-func opponentProximity(myID string, head Coord, snakes []Battlesnake) int {
+func opponentProximity(myID string, head Coord, myLength int32, snakes []Battlesnake) int {
 	points := 0
 	for _, s := range snakes {
 		if s.ID != myID {
-			if nearby(head, s.Head) {
+			if nearby(head, s.Head) && s.Length > myLength {
 				points += 5
 			}
 
