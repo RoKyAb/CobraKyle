@@ -88,7 +88,7 @@ func opponentProximity(myID string, head Coord, myLength int32, snakes []Battles
 	points := 0
 	for _, s := range snakes {
 		if s.ID != myID {
-			if nearby(head, s.Head) && s.Length > myLength {
+			if withInThree(head, s.Head) && s.Length > myLength {
 				points += 5
 			}
 
@@ -113,6 +113,10 @@ func adjacent(head, bodyPart Coord) bool {
 
 func nearby(head, bodyPart Coord) bool {
 	return math.Sqrt2 >= lineDistance(head, bodyPart)
+}
+
+func withInThree(head, bodyPart Coord) bool {
+	return math.Sqrt(3) >= lineDistance(head, bodyPart)
 }
 
 func adjacentToWall(head Coord, move string, h int, w int) int {
