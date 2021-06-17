@@ -58,7 +58,7 @@ func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 		}
 
 		nPoints += adjacentToWall(newHead, m, board.Height, board.Width)
-		nPoints += opponentProximity(me.ID, newHead, me.Length, board.Snakes)
+		nPoints += opponentProximity(me.ID, newHead, board.Snakes, board.Food)
 
 		if me.Health < int32(len(board.Snakes)*20) {
 			nPoints += foodBonusMap[m]
@@ -84,23 +84,37 @@ func lowRiskMove(moves []string, me Battlesnake, board Board) string {
 	return move
 }
 
-func opponentProximity(myID string, head Coord, myLength int32, snakes []Battlesnake) int {
+func opponentProximity(myID string, head Coord, snakes []Battlesnake, foods []Coord) int {
 	points := 0
 	for _, s := range snakes {
 		if s.ID != myID {
-			if withInThree(head, s.Head) && s.Length > myLength {
+			if nearby(head, s.Head) {
 				points += 5
 			}
 
-			for _, b := range s.Body {
+			for i, b := range s.Body {
 				if nearby(head, b) {
 					points += 1
+				}
+
+				if nearby(head, b) && len(s.Body) == i+1 && !opponentCanEatNext(foods, s.Head) {
+					points += -2
 				}
 			}
 		}
 	}
 
 	return points
+}
+
+func opponentCanEatNext(foods []Coord, head Coord) bool {
+	for _, f := range foods {
+		if adjacent(head, f) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func lineDistance(a, b Coord) float64 {
@@ -113,10 +127,6 @@ func adjacent(head, bodyPart Coord) bool {
 
 func nearby(head, bodyPart Coord) bool {
 	return math.Sqrt2 >= lineDistance(head, bodyPart)
-}
-
-func withInThree(head, bodyPart Coord) bool {
-	return math.Sqrt(3) >= lineDistance(head, bodyPart)
 }
 
 func adjacentToWall(head Coord, move string, h int, w int) int {
