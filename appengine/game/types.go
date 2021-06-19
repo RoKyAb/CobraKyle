@@ -46,3 +46,13 @@ type MoveResponse struct {
 	Move  string `json:"move"`
 	Shout string `json:"shout,omitempty"`
 }
+
+type Weights struct {
+	FoodBonus1 				float64
+	FoodBonus2 				float64
+	FoodBonus3 				float64
+	TightSnakeBonus 		float64
+	WallPenalty 			float64
+	OpponentHeadPenalty 	float64
+	OpponentBodyPenalty 	float64
+}
